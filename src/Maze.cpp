@@ -34,22 +34,47 @@ more parameters .
 */
 
 #include<stdlib.h>
-
+void path_exist(int *maze, int rows, int columns, int x1, int y1, int x2, int y2, bool *path);
 
 int path_exists(int *maze, int rows, int columns, int x1, int y1, int x2, int y2)
 {
-	if (maze == NULL || x2 > rows || y2 > columns || x1 > rows || y1 > columns || *((maze + x2*columns) + y2) == 0)
-		return 0;
-	else if (x1 == x2&&y1 == y2)
+	bool path;
+	path= false;
+	path_exist(maze, rows, columns, x1, y1, x2, y2, &path);
+	if (path)
 		return 1;
-	else if (*((maze + (x1 + 1)*columns) + y1) == 1)
-		return path_exists(maze, rows, columns, x1 + 1, y1, x2, y2);
-	else if (*((maze + x1*columns) + (y1 + 1)) == 1)
-		return path_exists(maze, rows, columns, x1, y1 + 1, x2, y2);
-	else if (*((maze + (x1 - 1)*columns) + y1) == 1)
-		return path_exists(maze, rows, columns, x1 - 1, y1, x2, y2);
-	else if (*((maze + x1 *columns) + (y1 - 1)) == 1)
-		return path_exists(maze, rows, columns, x1, y1 - 1, x2, y2);
 	else
 		return 0;
+}
+void path_exist(int *maze, int rows, int columns, int x1, int y1, int x2, int y2, bool *path)
+{
+	if (x1 == x2 && y1 == y2 && maze[x1*columns + y1] == 1)
+		*path = true;
+	else
+	{
+		if (x1 - 1 >= 0 && maze[((x1 - 1)*columns) + y1] == 1)
+		{
+			maze[x1*columns + y1] = 0;
+			path_exist(maze, rows, columns, x1 - 1, y1, x2, y2, path);
+			maze[x1*columns + y1] = 1;
+		}
+		if (x1 + 1 < rows && maze[(x1 + 1)*columns + y1] == 1)
+		{
+			maze[x1*columns + y1] = 0;
+			path_exist(maze, rows, columns, x1 + 1, y1, x2, y2, path);
+			maze[x1*columns + y1] = 1;
+		}
+		if (y1 - 1 >= 0 && maze[x1*columns + (y1 - 1)] == 1)
+		{
+			maze[x1*columns + y1] = 0;
+			path_exist(maze, rows, columns, x1, y1 - 1, x2, y2, path);
+			maze[x1*columns + y1] = 1;
+		}
+		if (y1 + 1 < columns && maze[x1*columns + (y1 + 1)] == 1)
+		{
+			maze[x1*columns + y1] = 0;
+			path_exist(maze, rows, columns, x1, y1 + 1, x2, y2, path);
+			maze[x1*columns + y1] = 1;
+		}
+	}
 }
